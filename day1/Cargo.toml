@@ -1,0 +1,10 @@
+[package]
+name = "experiment"
+version = "0.1.0"
+authors = ["Jasper Woudenberg <mail@jasperwoudenberg.com>"]
+
+[dependencies]
+
+[[bin]]
+name = "experiment"
+path = "main.rs"
