@@ -2,15 +2,20 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::collections::HashSet;
+use std::collections::HashMap;
 
 fn main() {
     match part1() {
         Ok(()) => (),
         Err(err) => println!("Error: {}", err),
     }
+    match part2() {
+        Ok(()) => (),
+        Err(err) => println!("Error: {}", err),
+    }
 }
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, Clone, Debug)]
 struct Memory {
     banks: Vec<u32>
 }
@@ -25,7 +30,7 @@ fn part1() -> Result<(), Box<Error>> {
     let input = read_input()?;
     let mut mem = Memory::from_vec(parse_line(&input));
     let cycles = redistribute_until_cycle(&mut mem);
-    println!("Cycles: {}", cycles);
+    println!("Loop detected after: {}", cycles);
     Ok(())
 }
 
@@ -37,6 +42,27 @@ fn redistribute_until_cycle(mem: &mut Memory) -> u32 {
         redistribute(mem);
     }
     count
+}
+
+fn part2() -> Result<(), Box<Error>> {
+    let input = read_input()?;
+    let mut mem = Memory::from_vec(parse_line(&input));
+    let cycles = redistribute_until_cycle_part_2(&mut mem);
+    println!("Loop length: {}", cycles);
+    Ok(())
+}
+
+fn redistribute_until_cycle_part_2(mem: &mut Memory) -> u32 {
+    let mut seen: HashMap<Memory, u32> = HashMap::new();
+    let mut count = 0;
+    loop {
+        match seen.insert(mem.clone(), count) {
+            None => (),
+            Some(x) => return count - x,
+        }
+        count += 1;
+        redistribute(mem);
+    }
 }
 
 fn redistribute(mem: &mut Memory) -> () {
