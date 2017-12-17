@@ -8,6 +8,10 @@ fn main() {
         Ok(()) => (),
         Err(err) => println!("Error: {}", err),
     }
+    match part2() {
+        Ok(()) => (),
+        Err(err) => println!("Error: {}", err),
+    }
 }
 
 fn part1() -> Result<(), Box<Error>> {
@@ -16,7 +20,17 @@ fn part1() -> Result<(), Box<Error>> {
     let initial = Zipper::from_vec(instructions).unwrap();
     let iter = itertools::unfold(initial, step);
     let jumps = iter.count() + 1;
-    println!("Jumps: {}", jumps);
+    println!("Jumps, part1: {}", jumps);
+    Ok(())
+}
+
+fn part2() -> Result<(), Box<Error>> {
+    let input = read_input()?;
+    let instructions: Vec<i32> = input.lines().map(parse_int).collect();
+    let initial = Zipper::from_vec(instructions).unwrap();
+    let iter = itertools::unfold(initial, step_part_2);
+    let jumps = iter.count() + 1;
+    println!("Jumps, part2: {}", jumps);
     Ok(())
 }
 
@@ -61,6 +75,13 @@ impl<T> Zipper<T> {
 fn step(instructions: &mut Zipper<i32>) -> Option<usize> {
     let instruction = instructions.get().clone();
     instructions.set(instruction + 1);
+    instructions.step(instruction)
+}
+
+fn step_part_2(instructions: &mut Zipper<i32>) -> Option<usize> {
+    let instruction = instructions.get().clone();
+    let new_instruction = if instruction >= 3 { instruction - 1 } else { instruction + 1 };
+    instructions.set(new_instruction);
     instructions.step(instruction)
 }
 
